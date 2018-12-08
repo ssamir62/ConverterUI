@@ -16,12 +16,19 @@ struct converter {
 
 class ConverterViewController: UIViewController {
 
-    @IBOutlet weak var outputDisplay: UITextField!
+    var conversionList: [converter] = []
+    var selectedConvIndex = 0;
+    
+    var userInput = "";
+    
     @IBOutlet weak var inputDisplay: UITextField!
-    @IBAction func converterAction(_ sender: Any) {
-        
+    @IBOutlet weak var outputDisplay: UITextField!
+   
+
+    @IBAction func conversionAction(_ sender: Any) {
+    
         let actionSheet = UIAlertController(title: "Choose Converter", message: nil, preferredStyle: .actionSheet)
-        
+
         for converter in self.conversionList {
             let action = UIAlertAction(title: converter.label, style: .default){
                 (action) in
@@ -30,11 +37,124 @@ class ConverterViewController: UIViewController {
             }
                 actionSheet.addAction(action)
             }
+        
+        self.present(actionSheet, animated: true, completion: nil)
+    }
+
+    
+   
+    
+    func numStyle(_ line: String) -> String{
+        
+        if(line == ""){
+            return "0"
         }
+        
+            return line
+
+    }
+    
+    func changeStringToInt(_ line: String) -> Double{
+        if let finalVal = line.last {
+            if finalVal == "." {
+                userInput.remove(at: userInput.endIndex)
+                let num = Double(userInput)
+                return num!
+            }
+            else{
+                return Double(line)!
+            }
+        }
+        
+        return 0.0
+    }
     
     
-    var conversionList: [converter] = []
-    var selectedConvIndex = 0;
+    @IBAction func clearHit(_ sender: Any) {
+        userInput = ""
+        labelINput()
+    }
+    
+    @IBAction func posnegHit(_ sender: Any) {
+        
+    if(userInput != ""){
+        if(userInput.contains("-")){
+            userInput.remove(at: userInput.startIndex)
+        }
+        else{
+            userInput.insert(Character("-"), at: userInput.startIndex)
+        }
+    }
+        
+        labelINput()
+        
+    }
+    
+    @IBAction func nineHit(_ sender: Any) {
+        inputAdd(pressed: "9")
+    }
+    
+    @IBAction func eightHit(_ sender: Any) {
+        inputAdd(pressed: "8")
+    }
+    
+    @IBAction func sevenHit(_ sender: Any) {
+        inputAdd(pressed: "7")
+    }
+    
+    @IBAction func sixHit(_ sender: Any) {
+        inputAdd(pressed: "6")
+    }
+    
+    @IBAction func fiveHit(_ sender: Any) {
+        inputAdd(pressed: "5")
+    }
+    
+    @IBAction func fourHit(_ sender: Any) {
+        inputAdd(pressed: "4")
+    }
+    
+    @IBAction func threeHit(_ sender: Any) {
+        inputAdd(pressed: "3")
+    }
+    
+    @IBAction func twoHit(_ sender: Any) {
+        inputAdd(pressed: "2")
+    }
+    
+    @IBAction func oneHit(_ sender: Any) {
+        inputAdd(pressed: "1")
+    }
+    
+    @IBAction func zeroHit(_ sender: Any) {
+        
+        if(userInput != ""){
+            inputAdd(pressed: "0")
+        }
+    }
+    
+    @IBAction func dotHit(_ sender: Any) {
+        
+        if(!userInput.contains(".")){
+            if(userInput != ""){
+                userInput.append(".")
+            }
+        }
+        else{
+            userInput.append("0.")
+        }
+        
+        labelINput()
+        
+    }
+    
+    func inputAdd(pressed num: String){
+        userInput.append(num)
+        labelINput()
+    }
+    
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,11 +174,40 @@ class ConverterViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    
+    
+    func converterSwitch(to convSwtch: Double ) -> Double {
+        switch selectedConvIndex{
+            
+        case 0:
+            return (convSwtch - 32) * 5/9
+        
+        case 2:
+            return convSwtch * 1.609
+            
+        case 3:
+            return convSwtch / 1.069
+        
+        default:
+            return convSwtch
+        }
+        
+        
+    }
 
 
     func labelINput(){
-        outputDisplay.text = conversionList[self.selectedConvIndex].outputUnit
-        inputDisplay.text = conversionList[self.selectedConvIndex].inputUnit
+        
+        let convSwtch = converterSwitch(to: changeStringToInt(userInput))
+        
+        
+        
+        inputDisplay.text = numStyle(userInput) + conversionList[self.selectedConvIndex].inputUnit
+        
+        outputDisplay.text = numStyle(String(convSwtch)) +
+            conversionList[self.selectedConvIndex].outputUnit
+        
     }
 
 
